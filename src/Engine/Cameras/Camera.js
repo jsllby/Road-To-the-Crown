@@ -34,10 +34,11 @@ function PerRenderCache() {
  * @param {Number} bound viewport border
  * @returns {Camera} New instance of Camera
  */
-function Camera(wcCenter, wcWidth, viewportArray, bound) {
+function Camera(wcCenter, wcWidth, viewportArray, bound,flag) {  
     // WC and viewport position and size
     this.mCameraState = new CameraState(wcCenter, wcWidth);
     this.mCameraShake = null;
+    this.flag=flag;   //0: opaque or translucent   1: transparent
 
     this.mViewport = [];  // [x, y, width, height]
     this.mViewportBound = 0;
@@ -57,7 +58,7 @@ function Camera(wcCenter, wcWidth, viewportArray, bound) {
     this.mVPMatrix = mat4.create();
 
     // background color
-    this.mBgColor = [0.8, 0.8, 0.8, 1]; // RGB and Alpha
+    this.mBgColor = [1, 1, 1, 1]; // RGB and Alpha
 
     // per-rendering cached information
     // needed for computing transforms for shaders
@@ -217,7 +218,7 @@ Camera.prototype.setupViewProjection = function () {
     gl.clearColor(this.mBgColor[0], this.mBgColor[1], this.mBgColor[2], this.mBgColor[3]);  // set the color to be cleared
     // Step A4: enable the scissor area, clear, and then disable the scissor area
     gl.enable(gl.SCISSOR_TEST);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    if(this.flag==0) gl.clear(gl.COLOR_BUFFER_BIT);
     gl.disable(gl.SCISSOR_TEST);
     //</editor-fold>
 
