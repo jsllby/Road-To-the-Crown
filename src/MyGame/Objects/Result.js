@@ -5,7 +5,7 @@
  */
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
-function Result(msg, Health, mHealth, Hunger, mHunger, atk, def, money, id, num, id2, num2,  pr) {
+function Result(msg, Health, mHealth, Hunger, mHunger, atk, def, money, isPrincessLocation,isPrincessAmbition ,id, num, id2, num2,  pr) {
     this.Id = -1;
     this.msg = msg;   //the message of result
     this.Health = Health;    //effect to health value
@@ -22,13 +22,20 @@ function Result(msg, Health, mHealth, Hunger, mHunger, atk, def, money, id, num,
     //this.getItem = [{"id":id,"num":num}];  //the item id and number you can got
     this.escape = true;    //the flag of escape successfully or not
     this.pr = pr; //the probabilities of different result
+    this.isPrincessLocation = isPrincessLocation;
+    this.isPrincessAmbition = isPrincessAmbition;
+    this.isMeetPrincess = false;
+    this.isFightPrincess = false;
+    this.ending = -1;
 }
 
 Result.prototype.apply = function(mygame, enemy){
     //console.log(mygame);
     //check the result
-    console.log(this.money);
-    console.log(mygame.mMoneyValue);
+    if(this.ending>0){
+        mygame.ending = this.ending;
+        mygame.EndGame();
+    }
     if(mygame.mMoneyValue + this.money <0){
         this.msg = "not enough money";
         console.log(this.msg);
@@ -53,7 +60,24 @@ Result.prototype.apply = function(mygame, enemy){
     }
     mygame.mAttackValue += this.atk;
     mygame.mDefenseValue += this.def;
-    mygame.mMoneyValue += this.money
+    mygame.mMoneyValue += this.money;
+
+
+    if(mygame.isPrincessLocation==false && this.isPrincessLocation==1){
+        mygame.isPrincessLocation=true;
+        console.log("isPrincessLocation");
+    }
+    if(mygame.isPrincessAmbition==false && this.isPrincessAmbition==1){
+        mygame.isPrincessAmbition=true;
+        console.log("isPrincessAmbition");
+    }
+    if(this.isMeetPrincess){
+        mygame.isMeetPrincess = true;
+    }
+    if(this.isFightPrincess){
+        mygame.isFightPrincess = true;
+        //console.log("fight princess");
+    }
     
     //update items
     if(this.getItemNum>0){
@@ -75,5 +99,7 @@ Result.prototype.apply = function(mygame, enemy){
     mygame.mAttack.setText("Attack: " + mygame.mAttackValue);
     mygame.mDefense.setText("Defense: " + mygame.mDefenseValue);
     mygame.mMoneyTexture.setText("Money: " + mygame.mMoneyValue);
+    //console.log(this.flag);
+    
     return this.msg;
 }

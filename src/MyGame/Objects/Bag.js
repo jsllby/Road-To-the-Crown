@@ -49,13 +49,18 @@ function Bag(myTexture,cursorTexture,myGame){
     
     this.weapon = -1;
     this.armor = -1;
-    // for(var i=0;i<14;i++){
-    //     this.AddItem(i, 1);
-    //    // this.AddItem(1);
-    //    // this.AddItem(2);
-    // }
+
+    /*
+    for(var i=0;i<19;i++){
+        this.AddItem(i, 1);
+
+    }
+    */
     this.AddItem(0,2);
     this.AddItem(3,2);
+    //this.AddItem(19,1);
+    //this.AddItem(20,1);
+   // this.AddItem(17,1);
     
     this.attackChange=0;
     this.defenceChange=0;
@@ -71,9 +76,9 @@ Bag.prototype.GetItemIdx = function(id){
 }
 
 Bag.prototype.GetItemNum = function(id){
-    console.log(id);
-    console.log(this.itemSet);
-    console.log(this.itemNum);
+//    console.log(id);
+//    console.log(this.itemSet);
+//    console.log(this.itemNum);
     for(var i=0; i<this.itemSet.length;i++)
     {
         if(id == this.itemSet[i].Id)
@@ -201,7 +206,7 @@ Bag.prototype.update = function(){
             if((this.current+1)<this.itemSet.length){
                 this.current++;
             }
-            else{
+            else if(this.current>4){
                 this.current = this.current - this.current%5-1;
             }
         }
@@ -228,15 +233,39 @@ Bag.prototype.update = function(){
     }  
     
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Enter)){
+        console.log("type");
+        console.log(this.itemSet[this.current].type);
         if(this.itemSet[this.current].type==0){
             this.itemSet[this.current].Use(this.myGame);
             this.RemoveItem();
         }
         else if(this.itemSet[this.current].Id == 13 && this.GetItemNum(12)>0){
+            // use key to open treasure case
             this.itemSet[this.current].Use(this.myGame);
             this.RemoveItem();
             this.RemoveItemById(12,1);
-            this.AddItem(11,1);
+            this.AddItem(18,1);
+        }
+        else if(this.itemSet[this.current].Id == 12 && this.GetItemNum(13)>0){
+            // use key to open treasure case
+            this.itemSet[this.current].Use(this.myGame);
+            this.RemoveItem();
+            this.RemoveItemById(13,1);
+            this.AddItem(18,1);
+        }
+        else if(this.itemSet[this.current].Id == 14 && this.GetItemNum(16)>0){
+            // use secret bag on letter
+            this.itemSet[this.current].Use(this.myGame);
+            this.RemoveItem();
+            this.RemoveItemById(16,1);
+            this.AddItem(17,1);
+        }
+        else if(this.itemSet[this.current].Id == 16 && this.GetItemNum(14)>0){
+            // use secret bag on letter
+            this.itemSet[this.current].Use(this.myGame);
+            this.RemoveItem();
+            this.RemoveItemById(14,1);
+            this.AddItem(17,1);
         }
         else if(this.itemSet[this.current].type==2){
             if(this.weapon!=-1){
@@ -269,6 +298,16 @@ Bag.prototype.update = function(){
                 this.itemSet[this.current].Use(this.myGame);
                 this.RemoveItem();
             }
+        }
+        else if(this.itemSet[this.current].type==4){
+            this.myGame.isBagOpened = false;
+            this.myGame.BagOpenInMes = true;
+            //this.myGame.hasChosen = true;
+            this.myGame.isMesOn = true;
+           // this.myGame.SendMessage("The duke said he had poisoned the elder king...");
+            console.log("item type="+this.itemSet[this.current].type);
+            this.myGame.SendMessage("The prince has been exiled.","As soon as I kill the king, I will be the new king.","                                 From Duke","             [press SPACE to close]","","");
+           // this.myGame.SendMessage("The duke said he had poisoned the elder king...","","","","","");
         }
     }  
 }

@@ -12,36 +12,15 @@
 "use strict";  // Operate in Strict mode such that variables must be declared before used!
 
 function MyGame() {
-/*
-    this.kMinionSprite = "assets/minion_sprite.png";
-
-    this.kPlatformTexture = "assets/platform.png";
-    this.kWallTexture = "assets/wall.png";
-    this.kTargetTexture = "assets/target.png";
-    this.kParticleTexture = "assets/particle.png";
-    
-    // The camera to view the scene
-    this.mCamera = null;
-
-    this.mMsg = null;
-    this.mShapeMsg = null;
-
-    this.mAllObjs = null;
-    this.mAllParticles = null;
-    this.mBounds = null;
-    this.mCollisionInfos = [];
-    this.mHero = null;
-    
-    this.mCurrentObj = 0;
-    this.mTarget = null;
-    */
-
     // scene background
-    this.bgForestTexture = "assets/forest3.png";
+    this.bgForestTexture1 = "assets/forest_x5.png";
+    this.bgForestTexture2 = "assets/forest_x6.png";
     this.BagTexture = "assets/bag.png";
     this.kKnight = "assets/Prince_new.png";
     this.CursorTexture = "assets/cursor.png";
     this.bgAttributeTexture = "assets/attribute.png";
+    
+    this.PrinceAttackTexture = "assets/prince_attack.png";
     
     // event background
     this.EagleTexture = "assets/eagle.png";
@@ -49,11 +28,12 @@ function MyGame() {
     this.Knight = "assets/Knight_New.png";
     this.TreeTexture = "assets/appletree.png";
     this.PondTexture = "assets/pond.png";
-    this.RuinsTexture = "assets/ruins.png";
+    this.CabinTexture = "assets/cabin.png";
     this.HunterTexture = "assets/hunter.png";
     this.VillagerTexture = "assets/villager.png";
     this.WizardTexture = "assets/wizard.png";
     this.BusinessmanTexture = "assets/businessman.png";
+    this.PrincessTexture = "assets/princess.png";
    
     // item texture
     this.apple = "assets/item/0_apple.png";
@@ -70,7 +50,13 @@ function MyGame() {
     this.cape = "assets/item/11_cape.png";
     this.key = "assets/item/12_key.png";
     this.treasurechest = "assets/item/13_treasurechest.png";
-    
+    this.potion1 = "assets/item/15_potion1.jpg";
+    this.potion2 = "assets/item/16_potion2.jpg";    
+    this.letter1 = "assets/item/14_letter1.png";
+    this.letter2 = "assets/item/17_letter2.png";
+    this.ring = "assets/item/18_ring.png";
+    this.bread = "assets/item/19_bread.png";
+    this.potion3 = "assets/item/20_potion3.png";
     
     this.IntroTexture = "assets/Intro.png";
    
@@ -78,6 +64,7 @@ function MyGame() {
 
     // audio
     this.BGM = "assets/MiddleEarth.mp3";
+    this.attack_audio = "assets/attack_audio.mp3";
 
     // local variables
     this.bgTown = "";
@@ -124,32 +111,34 @@ function MyGame() {
     // flags
     this.isBagOpened = false;
     this.isMesOn = false;
-    this.hasChosen = false;
+    this.hasChosen = true;
     this.mEventIndex = 0;
     this.isIntroOpen = true;
+    this.BagOpenInMes = false;
+    this.attack = false;
+    this.isInAnimation = 0;
     
     //counter 
     this.mCounter = 0;
+    this.animationCounter = 0;
     
     //event
     this.mEventSet = null;
     this.mEventNum = 16;
     
-    this.hungerRate = 1;
+    this.hungerRate = 20;
+    
+    this.princess = null;
 }
 gEngine.Core.inheritPrototype(MyGame, Scene);
 
 
 MyGame.prototype.loadScene = function () {
-    /*
-    gEngine.Textures.loadTexture(this.kMinionSprite);
-    gEngine.Textures.loadTexture(this.kPlatformTexture);
-    gEngine.Textures.loadTexture(this.kWallTexture);
-    gEngine.Textures.loadTexture(this.kTargetTexture);
-    gEngine.Textures.loadTexture(this.kParticleTexture);
-    */
-    gEngine.Textures.loadTexture(this.bgForestTexture);
+    
+    gEngine.Textures.loadTexture(this.bgForestTexture1);
+    gEngine.Textures.loadTexture(this.bgForestTexture2);
     gEngine.Textures.loadTexture(this.kKnight);
+    gEngine.Textures.loadTexture(this.PrinceAttackTexture);
     gEngine.Textures.loadTexture(this.BagTexture);
     gEngine.Textures.loadTexture(this.CursorTexture);
     gEngine.Textures.loadTexture(this.bgAttributeTexture);
@@ -158,16 +147,16 @@ MyGame.prototype.loadScene = function () {
     gEngine.Textures.loadTexture(this.Knight);
     gEngine.Textures.loadTexture(this.TreeTexture);
     gEngine.Textures.loadTexture(this.PondTexture);
-    gEngine.Textures.loadTexture(this.RuinsTexture);
+    gEngine.Textures.loadTexture(this.CabinTexture);
     gEngine.Textures.loadTexture(this.HunterTexture);
     gEngine.Textures.loadTexture(this.VillagerTexture);
     gEngine.Textures.loadTexture(this.WizardTexture);
     gEngine.Textures.loadTexture(this.BusinessmanTexture);
     
-    
     gEngine.Textures.loadTexture(this.IntroTexture);
     // load audio
     gEngine.AudioClips.loadAudio(this.BGM);
+    gEngine.AudioClips.loadAudio(this.attack_audio);
 
     // load items
     gEngine.Textures.loadTexture(this.apple);
@@ -184,9 +173,13 @@ MyGame.prototype.loadScene = function () {
     gEngine.Textures.loadTexture(this.cape);
     gEngine.Textures.loadTexture(this.key);
     gEngine.Textures.loadTexture(this.treasurechest);
-    
-    
-    
+    gEngine.Textures.loadTexture(this.potion1);
+    gEngine.Textures.loadTexture(this.potion2);
+    gEngine.Textures.loadTexture(this.letter1);
+    gEngine.Textures.loadTexture(this.letter2);
+    gEngine.Textures.loadTexture(this.ring);
+    gEngine.Textures.loadTexture(this.bread);
+    gEngine.Textures.loadTexture(this.potion3);
     
 };
 
@@ -198,8 +191,10 @@ MyGame.prototype.unloadScene = function () {
     gEngine.Textures.unloadTexture(this.kTargetTexture);
     gEngine.Textures.unloadTexture(this.kParticleTexture);
     */
-    gEngine.Textures.unloadTexture(this.bgForestTexture);
+    gEngine.Textures.unloadTexture(this.bgForestTexture1);
+    gEngine.Textures.unloadTexture(this.bgForestTexture2);
     gEngine.Textures.unloadTexture(this.kKnight);
+    gEngine.Textures.unloadTexture(this.PrinceAttackTexture);
     gEngine.Textures.unloadTexture(this.BagTexture);
     gEngine.Textures.unloadTexture(this.CursorTexture);
     gEngine.Textures.unloadTexture(this.bgAttributeTexture);
@@ -220,16 +215,34 @@ MyGame.prototype.unloadScene = function () {
     gEngine.Textures.unloadTexture(this.sword);
     gEngine.Textures.unloadTexture(this.shield1);
     gEngine.Textures.unloadTexture(this.shield2);
+    gEngine.Textures.unloadTexture(this.secretbag);
+    gEngine.Textures.unloadTexture(this.cape);
+    gEngine.Textures.unloadTexture(this.key);
+    gEngine.Textures.unloadTexture(this.treasurechest);
+    gEngine.Textures.unloadTexture(this.potion1);
+    gEngine.Textures.unloadTexture(this.potion2);
+    gEngine.Textures.unloadTexture(this.letter1);
+    gEngine.Textures.unloadTexture(this.letter2);
+    gEngine.Textures.unloadTexture(this.ring);
+    gEngine.Textures.unloadTexture(this.bread);
+    gEngine.Textures.unloadTexture(this.potion3);
     
     gEngine.Textures.unloadTexture(this.IntroTexture);
 
     gEngine.AudioClips.stopBackgroundAudio();
     gEngine.AudioClips.unloadAudio(this.BGM);
+    gEngine.AudioClips.unloadAudio(this.attack_audio);
 
-
-    var nextscene = new GameOver();
-    //nextscene.id = this.ending;
-    nextscene.setId(this.ending);
+    var nextscene = null;
+    if(this.ending>1){
+        nextscene = new MyTown();
+    }
+    else{
+        nextscene = new GameOver();
+        nextscene.id = this.ending;
+        nextscene.setId(this.ending);
+    }
+    
     gEngine.Core.startScene(nextscene);// load next scene
 };
 
@@ -271,67 +284,39 @@ MyGame.prototype.initialize = function () {
 
     gEngine.AudioClips.playBackgroundAudio(this.BGM);
 
-    /*
-    this.mHero = new Hero(this.kMinionSprite);
-    this.mAllObjs = new GameObjectSet();
-    this.mAllParticles = new ParticleGameObjectSet();
-
-    this.createBounds();
-    this.mFirstObject = this.mAllObjs.size();
-    this.mCurrentObj = this.mFirstObject;
-    
-    this.mAllObjs.addToSet(this.mHero);
-    var y = 70;
-    var x = 10;
-    for (var i = 1; i<=5; i++) {
-        var m = new Minion(this.kMinionSprite, x, y, ((i%2)!==0));
-        x += 20;
-        this.mAllObjs.addToSet(m);
-    }
-
-    this.mMsg = new FontRenderable("Status Message");
-    this.mMsg.setColor([0, 0, 0, 1]);
-    this.mMsg.getXform().setPosition(5, 7);
-    this.mMsg.setTextHeight(3);
-    
-    this.mShapeMsg = new FontRenderable("Shape");
-    this.mShapeMsg.setColor([0, 0, 0, 1]);
-    this.mShapeMsg.getXform().setPosition(5, 73);
-    this.mShapeMsg.setTextHeight(2.5);
-    */
-    this.bgForest = new TextureRenderable(this.bgForestTexture);
+    this.bgForest = new TextureRenderable(this.bgForestTexture1);
     this.bgForest.setColor([0,0,0,0]);
     this.bgForest.getXform().setSize(2000,600);
     this.bgForest.getXform().setPosition(1000,300);
-    this.bgForest2 = new TextureRenderable(this.bgForestTexture);
+    this.bgForest2 = new TextureRenderable(this.bgForestTexture2);
     this.bgForest2.setColor([0, 0, 0, 0]);
     this.bgForest2.getXform().setSize(2000,600);
     this.bgForest2.getXform().setPosition(3000,300);
-    this.bgForest3 = new TextureRenderable(this.bgForestTexture);
+    this.bgForest3 = new TextureRenderable(this.bgForestTexture1);
     this.bgForest3.setColor([0, 0, 0, 0]);
     this.bgForest3.getXform().setSize(2000,600);
     this.bgForest3.getXform().setPosition(5000,300);
-    this.bgForest4 = new TextureRenderable(this.bgForestTexture);
+    this.bgForest4 = new TextureRenderable(this.bgForestTexture2);
     this.bgForest4.setColor([0, 0, 0, 0]);
     this.bgForest4.getXform().setSize(2000,600);
     this.bgForest4.getXform().setPosition(7000,300);
-    this.bgForest5 = new TextureRenderable(this.bgForestTexture);
+    this.bgForest5 = new TextureRenderable(this.bgForestTexture1);
     this.bgForest5.setColor([0,0,0,0]);
     this.bgForest5.getXform().setSize(2000,600);
     this.bgForest5.getXform().setPosition(9000,300);
-    this.bgForest6 = new TextureRenderable(this.bgForestTexture);
+    this.bgForest6 = new TextureRenderable(this.bgForestTexture2);
     this.bgForest6.setColor([0, 0, 0, 0]);
     this.bgForest6.getXform().setSize(2000,600);
     this.bgForest6.getXform().setPosition(11000,300);
-    this.bgForest7 = new TextureRenderable(this.bgForestTexture);
+    this.bgForest7 = new TextureRenderable(this.bgForestTexture1);
     this.bgForest7.setColor([0, 0, 0, 0]);
     this.bgForest7.getXform().setSize(2000,600);
     this.bgForest7.getXform().setPosition(13000,300);
-    this.bgForest8 = new TextureRenderable(this.bgForestTexture);
+    this.bgForest8 = new TextureRenderable(this.bgForestTexture2);
     this.bgForest8.setColor([0, 0, 0, 0]);
     this.bgForest8.getXform().setSize(2000,600);
     this.bgForest8.getXform().setPosition(15000,300);
-    this.bgForest9 = new TextureRenderable(this.bgForestTexture);
+    this.bgForest9 = new TextureRenderable(this.bgForestTexture1);
     this.bgForest9.setColor([0, 0, 0, 0]);
     this.bgForest9.getXform().setSize(2000,600);
     this.bgForest9.getXform().setPosition(17000,300);
@@ -420,17 +405,6 @@ MyGame.prototype.initialize = function () {
     this.mKnight.setAnimationType(SpriteAnimateRenderable.eAnimationType.eAnimateRight);
     this.mKnight.setAnimationSpeed(5);
     
-  /*  this.Eagle = new SpriteAnimateRenderable(this.EagleTexture);
-    this.Eagle.setColor([1, 1, 1, 0]);
-    this.Eagle.getXform().setPosition(50, 25);
-    this.Eagle.getXform().setSize(30, 30);
-    this.Eagle.setSpriteSequence(128, 0,      // first element pixel position: top-left 164 from 512 is top of image, 0 is left of image
-                                    80, 120,       // widthxheight in pixels
-                                    9,              // number of elements in this sequence
-                                    0);             // horizontal padding in between
-    this.Eagle.setAnimationType(SpriteAnimateRenderable.eAnimationType.eAnimateRight);
-    this.Eagle.setAnimationSpeed(10);*/
-
     // message background
     this.bgMsg = new Renderable();
     this.bgMsg.getXform().setPosition(-650,-300);
@@ -440,31 +414,6 @@ MyGame.prototype.initialize = function () {
     //event, action and result
     this.mEventSet = new EventSet(this.mEventNum);
     console.log(this.mEventSet);
-    /*
-     var e = new Enemy();
-    e.atk=15;
-    e.def=0;
-    e.mHealth = 50;
-    var r1 = new Result("health +10", 10,0,0,0,0,0,0,0.4);
-    var r2 = new Result("max health +10", 0,+10,0,0,0,0,0,0.6);
-    var r3 = new Result("hunger +10", 0,0,10,0,0,0,0,0.2);
-    var r4 = new Result("get item * 1", 0,0,0,0,0,0,1,0.8);
-    var r5 = new Result("attack +1", 0,0,0,0,1,0,0,0.5);
-    var r6 = new Result("hunger -10", 0,0,0,-10,0,0,0,0.5);
-    var r7 = new Result("fight", 0,0,0,0,0,0,0,1);
-    r7.escape = false;
-    var r8 = new Result("defense -1", 0,0,0,0,0,-1,0,0.5);
-    var a1 = new Action("1. action1",[r1, r2]);
-    var a2 = new Action("2. action2", [r3, r4]);
-    var a3 = new Action("1. action3",[r5, r6]);
-    var a4 = new Action("2. action4", [r7]);
-    var a5 = new Action("1. action5",[r5, r8]);
-    var a6 = new Action("2. action6", [r6, r8]);    
-    this.mEventSet[0].action = [a1, a2];
-    this.mEventSet[1].action = [a3, a4];
-    this.mEventSet[2].action = [a5, a6];
-    this.mEventSet[1].enemy = e;
-    */
 };
 
 // This is the draw function, make sure to setup proper drawing environment, and more
@@ -475,19 +424,6 @@ MyGame.prototype.draw = function () {
 
     this.mCamera.setupViewProjection();
     
-    /*
-    this.mAllObjs.draw(this.mCamera);
-    
-    // for now draw these ...
-    //for (var i = 0; i<this.mCollisionInfos.length; i++)
-    //    this.mCollisionInfos[i].draw(this.mCamera);
-    this.mCollisionInfos = []; 
-    
-    this.mTarget.draw(this.mCamera);
-    this.mMsg.draw(this.mCamera);   // only draw status in the main camera
-    this.mShapeMsg.draw(this.mCamera);
-    this.mAllParticles.draw(this.mCamera);
-    */
     this.bgForest.draw(this.mCamera);
     this.bgForest2.draw(this.mCamera);
     this.bgForest3.draw(this.mCamera);
@@ -517,6 +453,9 @@ MyGame.prototype.draw = function () {
         this.mMes5.draw(this.mCamera);
         this.mMes6.draw(this.mCamera);
     }
+    else{
+        this.bgMsg.getXform().setPosition(1000,1000);
+    }
     
     
 
@@ -534,82 +473,46 @@ MyGame.prototype.draw = function () {
     }
 };
 
-/*
-MyGame.prototype.increasShapeSize = function(obj, delta) {
-    var s = obj.getRigidBody();
-    var r = s.incShapeSizeBy(delta);
-};
-*/
 
 // The Update function, updates the application state. Make sure to _NOT_ draw
 // anything from this function!
 MyGame.kBoundDelta = 0.1;
 MyGame.prototype.update = function () {
-    this.flag=0;
-    /*
-    var msg = "";   
     
-    if (gEngine.Input.isKeyPressed(gEngine.Input.keys.C)) {
-        if (this.mCamera.isMouseInViewport()) {
-            var p = this.createParticle(this.mCamera.mouseWCX(), this.mCamera.mouseWCY());
-            this.mAllParticles.addToSet(p);
+    if(this.attack==true){
+        this.mKnight.updateAnimation();
+    }
+    if(this.isInAnimation==0)  this.flag=0;
+
+    if(this.isInAnimation==1){
+        this.animationCounter++;
+        if(this.animationCounter%25==0){
+            gEngine.AudioClips.playACue(this.attack_audio);
         }
-    }
-    gEngine.ParticleSystem.update(this.mAllParticles);
-    if (gEngine.Input.isKeyClicked(gEngine.Input.keys.P)) {
-        gEngine.Physics.togglePositionalCorrection();
-    }
-    if (gEngine.Input.isKeyClicked(gEngine.Input.keys.V)) {
-        gEngine.Physics.toggleHasMotion();
-    }
-    if (gEngine.Input.isKeyClicked(gEngine.Input.keys.H)) {
-        this.radomizeVelocity();
-    }
-    
-    if (gEngine.Input.isKeyClicked(gEngine.Input.keys.Left)) {
-        this.mCurrentObj -= 1;
-        if (this.mCurrentObj < this.mFirstObject)
-            this.mCurrentObj = this.mAllObjs.size() - 1;
-    }            
-    if (gEngine.Input.isKeyClicked(gEngine.Input.keys.Right)) {
-        this.mCurrentObj += 1;
-        if (this.mCurrentObj >= this.mAllObjs.size())
-            this.mCurrentObj = this.mFirstObject;
+        console.log(this.animationCounter);
     }
 
-    var obj = this.mAllObjs.getObjectAt(this.mCurrentObj);
-    if (gEngine.Input.isKeyPressed(gEngine.Input.keys.Y)) {
-        this.increasShapeSize(obj, MyGame.kBoundDelta);
-    }
-    if (gEngine.Input.isKeyPressed(gEngine.Input.keys.U)) {
-        this.increasShapeSize(obj, -MyGame.kBoundDelta);
-    }
-    
-    if (gEngine.Input.isKeyClicked(gEngine.Input.keys.G)) {
-        var x = 20 + Math.random() * 60;
-        var y = 75;
-        var t = Math.random() > 0.5;
-        var m = new Minion(this.kMinionSprite, x, y, t);
-        this.mAllObjs.addToSet(m);
-    }
-        
-    obj.keyControl();
-    obj.getRigidBody().userSetsState();
-    
-    this.mAllObjs.update(this.mCamera);
-    
-    gEngine.Physics.processCollision(this.mAllObjs, this.mCollisionInfos);
-    gEngine.ParticleSystem.collideWithRigidSet(this.mAllObjs, this.mAllParticles);
+    if(this.animationCounter==100){
+        this.animationCounter=0;
+        this.isInAnimation = false;
+        this.flag=0;
+        this.mKnight.setTexture(this.kKnight);
 
-    var p = obj.getXform().getPosition();
-    this.mTarget.getXform().setPosition(p[0], p[1]);
-    msg += "  P(" + gEngine.Physics.getPositionalCorrection() + 
-           " " + gEngine.Physics.getRelaxationCount() + ")" +
-           " V(" + gEngine.Physics.getHasMotion() + ")";
-    this.mMsg.setText(msg);
-    
-    this.mShapeMsg.setText(obj.getRigidBody().getCurrentState());
-    */
+        this.isInAnimation=0;
+        console.log(this.mEventSet[this.mEventIndex-1].action[0]);
+        this.hasChosen = true;
+        var res = this.mEventSet[this.mEventIndex-1].action[0].getResult();
+        console.log("res");
+        console.log(res);
+        var msg = res.apply(this, this.mEventSet[this.mEventIndex-1].enemy);
+
+
+        var enemy = this.mEventSet[this.mEventIndex-1].icon;
+        enemy.getXform().setPosition(2000,2000);
+
+        this.SendMessage(msg,"","","","","");
+    }
+
 
     if(this.isIntroOpen==true){
         if (gEngine.Input.isKeyClicked(gEngine.Input.keys.Space)){
@@ -620,7 +523,7 @@ MyGame.prototype.update = function () {
     }
     var deltaX=10;
     //this.Eagle.updateAnimation();
-    if (gEngine.Input.isKeyPressed(gEngine.Input.keys.D)) {
+    if (this.isInAnimation==false&&gEngine.Input.isKeyPressed(gEngine.Input.keys.D)) {
         if(this.isBagOpened==false && this.isMesOn==false){
             var center = this.mCamera.getWCCenter();
             center[0]+=deltaX;
@@ -644,32 +547,59 @@ MyGame.prototype.update = function () {
             }
             
            // this.mKnight.draw(this.mCamera);
-            this.flag=1;
+            if(this.isInAnimation==false)  this.flag=1;
+
         }
         
     }
 
-    if(this.hasChosen && gEngine.Input.isKeyClicked(gEngine.Input.keys.Space)){
+    if(this.isInAnimation==false&&this.hasChosen && gEngine.Input.isKeyClicked(gEngine.Input.keys.Space)){
+        if(this.BagOpenInMes==true){
+            this.BagOpenInMes = false;
+            this.isBagOpened = true;
+        }
         this.isMesOn=false;
-        this.bgMsg.getXform().setPosition(1000,1000);
+        //this.bgMsg.getXform().setPosition(1000,1000);
         this.mMes1.getXform().setPosition(1000,1000);
         this.mMes2.getXform().setPosition(1000,1000);
         this.mMes3.getXform().setPosition(1000,1000);
         this.mMes4.getXform().setPosition(1000,1000);
         this.mMes5.getXform().setPosition(1000,1000);
         this.mMes6.getXform().setPosition(1000,1000);
+        //enemy disappear
+        if(this.mEventSet[this.mEventIndex-1].enemy){
+            this.mEventSet[this.mEventIndex-1].icon.getXform().setPosition(1000,1000);
+        }
     }
     
-    if(this.isMesOn && !this.hasChosen && gEngine.Input.isKeyClicked(gEngine.Input.keys.One)){
-        console.log(this.mEventSet[this.mEventIndex-1].action[0]);
-        this.hasChosen = true;
-        var res = this.mEventSet[this.mEventIndex-1].action[0].getResult();
-        console.log("res");
-        console.log(res);
-        var msg = res.apply(this, this.mEventSet[this.mEventIndex-1].enemy);
-        this.SendMessage(msg,"","","","","");
+    if( this.isMesOn&& !this.hasChosen && gEngine.Input.isKeyClicked(gEngine.Input.keys.One) && this.mEventSet[this.mEventIndex-1].action[0].content){
+        if(this.isInAnimation==0&&  this.mEventSet[this.mEventIndex-1].enemy != null){
+            // play fight animation
+            console.log("fight animation");
+            this.isMesOn = false;
+
+            this.mKnight.setTexture(this.PrinceAttackTexture);
+            this.isInAnimation = 1;
+            this.flag=1;
+            //this.animationCounter++;
+
+            //this.mKnight.setTexture(this.kKnight);
+        }
+
+
+        else{
+            this.isInAnimation=0;
+            console.log(this.mEventSet[this.mEventIndex-1].action[0]);
+            this.hasChosen = true;
+            var res = this.mEventSet[this.mEventIndex-1].action[0].getResult();
+            console.log("res");
+            console.log(res);
+            var msg = res.apply(this, this.mEventSet[this.mEventIndex-1].enemy);
+            this.SendMessage(msg,"","","","","");
+        }
+
     }
-    if(this.isMesOn &&!this.hasChosen && gEngine.Input.isKeyClicked(gEngine.Input.keys.Two)){
+    if(this.isInAnimation==false &&this.isMesOn &&!this.hasChosen && gEngine.Input.isKeyClicked(gEngine.Input.keys.Two) && this.mEventSet[this.mEventIndex-1].action[1].content){
         //console.log(this.mEventSet[this.mEventIndex-1].action[1]);
         this.hasChosen = true;
         var res = this.mEventSet[this.mEventIndex-1].action[1].getResult();
@@ -678,7 +608,7 @@ MyGame.prototype.update = function () {
         var msg = res.apply(this, this.mEventSet[this.mEventIndex-1].enemy);
         this.SendMessage(msg,"","","","","");
     }
-    if(this.isMesOn &&!this.hasChosen && gEngine.Input.isKeyClicked(gEngine.Input.keys.Three)){
+    if(this.isInAnimation==false &&this.isMesOn &&!this.hasChosen && gEngine.Input.isKeyClicked(gEngine.Input.keys.Three) && this.mEventSet[this.mEventIndex-1].action[2].content){
         //console.log(this.mEventSet[this.mEventIndex-1].action[1]);
         this.hasChosen = true;
         var res = this.mEventSet[this.mEventIndex-1].action[2].getResult();
@@ -687,17 +617,31 @@ MyGame.prototype.update = function () {
         res.apply(this, this.mEventSet[this.mEventIndex-1].enemy);
         this.SendMessage(res.msg,"","","","","");
     }
-    
-    if (gEngine.Input.isKeyClicked(gEngine.Input.keys.U)) {
-        if(this.flag==1){
-            this.flag=0;
-        }
-        else this.flag =1;
+    if(this.isInAnimation==false &&this.isMesOn &&!this.hasChosen && gEngine.Input.isKeyClicked(gEngine.Input.keys.Four) && this.mEventSet[this.mEventIndex-1].action[3].content){
+        //console.log(this.mEventSet[this.mEventIndex-1].action[1]);
+        this.hasChosen = true;
+        var res = this.mEventSet[this.mEventIndex-1].action[3].getResult();
+        console.log("res");
+        console.log(res);
+        res.apply(this, this.mEventSet[this.mEventIndex-1].enemy);
+        this.SendMessage(res.msg,"","","","","");
     }
+    
+    if (this.isInAnimation==false &&gEngine.Input.isKeyClicked(gEngine.Input.keys.U)) {
+        if(this.attack==false){
+            this.attack = true;
+            this.mKnight.setTexture(this.PrinceAttackTexture);
+        }
+        else{
+            this.attack =false;
+            this.mKnight.setTexture(this.kKnight);
+        }
+    }
+    
     if(this.flag==1){
         this.mKnight.updateAnimation();
     }
-    if(gEngine.Input.isKeyClicked(gEngine.Input.keys.B)){
+    if(this.isInAnimation==false &&gEngine.Input.isKeyClicked(gEngine.Input.keys.B)){
         if(this.isMesOn==false&&this.isBagOpened==false){
             //this.bagCamera.setViewport([450,200,300,300],0);
             this.isBagOpened=true;
@@ -707,22 +651,22 @@ MyGame.prototype.update = function () {
             this.isBagOpened=false;
         }
     }
-    if(this.mEventIndex<this.mEventNum && this.mKnight.getXform().mPosition[0]>this.mEventSet[this.mEventIndex].icon.getXform().mPosition[0]-200){
+    if(this.isInAnimation==false &&this.mEventIndex<this.mEventNum && this.mKnight.getXform().mPosition[0]>this.mEventSet[this.mEventIndex].icon.getXform().mPosition[0]-200){
         console.log(this.mEventSet[this.mEventIndex]);
         this.hasChosen = false;
 
         // pass through last knight
         if(this.mBag.GetItemIdx(11)!=-1){
             if(this.mEventIndex==15){
-                var action = this.mEventSet[this.mEventIndex].action[2];
-                action.setContent("3. I am a hunter, I have this cape!");
+                var action = this.mEventSet[this.mEventIndex].action[1];
+                action.setContent("2. I am a hunter, I have this cape!");
                 action.setResult([AllResult[37]]);
             }
         }
 
         var info = this.mEventSet[this.mEventIndex].information;
         var act = this.mEventSet[this.mEventIndex].action;
-        this.SendMessage(info, act[0].content, act[1].content,act[2].content,"","");
+        this.SendMessage(info, act[0].content, act[1].content,act[2].content,act[3].content,"");
         this.mEventIndex++;
     }
     
@@ -780,6 +724,11 @@ MyGame.prototype.EndGame = function(){
     if(this.ending==-1){
         this.ending = 1;
     }
+   
+    gEngine.ResourceMap.asyncLoadRequested("status");
+    
+    gEngine.ResourceMap.asyncLoadCompleted("status",this);
+   // console.log(gEngine.ResourceMap.mResourceMap )
     gEngine.GameLoop.stop();
 }
 
@@ -794,7 +743,6 @@ MyGame.prototype.SendMessage = function(line1, line2, line3, line4,line5, line6)
                 idx = i;
             }
         }
-        console.log(i);
         line11 = line1.slice(0,idx);
         line6 = line5;
         line5 = line4;
@@ -809,7 +757,8 @@ MyGame.prototype.SendMessage = function(line1, line2, line3, line4,line5, line6)
     this.mMes1.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]+70-150);
     this.mMes2.setText(line2);
     this.mMes2.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]+35-150);
-    this.mMes3.setText(line3);
+    if(typeof (line3)!= "undefined")
+        this.mMes3.setText(line3);
     this.mMes3.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-0-150);
     if(typeof(line4) != "undefined")
         this.mMes4.setText(line4);
@@ -825,30 +774,3 @@ MyGame.prototype.SendMessage = function(line1, line2, line3, line4,line5, line6)
     this.isMesOn=true;
 }
 
-/*
-MyGame.prototype.createParticle = function(atX, atY) {
-    var life = 30 + Math.random() * 200;
-    var p = new ParticleGameObject("assets/particle.png", atX, atY, life);
-    p.getRenderable().setColor([1, 0, 0, 1]);
-    
-    // size of the particle
-    var r = 3.5 + Math.random() * 2.5;
-    p.getXform().setSize(r, r);
-    
-    // final color
-    var fr = 3.5 + Math.random();
-    var fg = 0.4 + 0.1 * Math.random();
-    var fb = 0.3 + 0.1 * Math.random();
-    p.setFinalColor([fr, fg, fb, 0.6]);
-    
-    // velocity on the particle
-    var fx = 10 * Math.random() - 20 * Math.random();
-    var fy = 10 * Math.random();
-    p.getParticle().setVelocity([fx, fy]);
-    
-    // size delta
-    p.setSizeDelta(0.98);
-    
-    return p;
-};
-*/

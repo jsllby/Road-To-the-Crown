@@ -39,7 +39,7 @@ gEngine.ResourceMap = (function () {
 
     // Resource storage
     var mResourceMap = {};
-
+    
    /**
     * Register one more resource to load
     * @memberOf gEngine.ResourceMap
@@ -67,7 +67,9 @@ gEngine.ResourceMap = (function () {
         if(gEngine.LoadingIconConfig.isLevelSet()){
             gEngine.LoadingIconConfig.loadingUpdate();
         }
+       // console.log("cx");
         _checkForAllLoadCompleted();
+       // console.log("allcx");
     };
 
     var _checkForAllLoadCompleted = function () {

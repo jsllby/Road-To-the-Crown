@@ -26,7 +26,7 @@ function Hero(spriteTexture) {
     this.toggleDrawRenderable();
     this.toggleDrawRigidShape();
 }
-gEngine.Core.inheritPrototype(Hero, WASDObj);
+//gEngine.Core.inheritPrototype(Hero, WASDObj);
 
 Hero.prototype.update = function () {
     GameObject.prototype.update.call(this);

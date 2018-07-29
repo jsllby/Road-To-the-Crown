@@ -97,7 +97,7 @@ gEngine.Textures = (function () {
                 _processLoadedImage(textureName, img);
             };
             img.src = textureName;
-            console.log(textureName);
+           // console.log(textureName);
         } else {
             gEngine.ResourceMap.incAssetRefCount(textureName);
         }
