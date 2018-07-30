@@ -85,8 +85,8 @@ function MyGame() {
     this.mHealth = null;
     this.healthBar1 = null;
     this.healthBar2 = null;
-    this.mHealthValue = 1100;
-    this.mHealthValueMax = 1100;
+    this.mHealthValue = 100;
+    this.mHealthValueMax = 100;
     this.mHunger = null;
     this.hungerBar1 = null;
     this.hungerBar2 = null;
@@ -97,7 +97,7 @@ function MyGame() {
     this.mDefense = null;
     this.mDefenseValue = 10;
     this.mMoneyTexture = null;
-    this.mMoneyValue = 110;
+    this.mMoneyValue = 0;
     this.mMes1 = null;
     this.mMes2 = null;
     this.mMes3 = null;
