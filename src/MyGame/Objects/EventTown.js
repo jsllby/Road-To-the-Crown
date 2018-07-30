@@ -60,15 +60,15 @@ function EventTown(num) {
     var AllResultTown=[
         // dog 0 1
         new Result("Fight result: ", 0, 0, 0, 0, 0, 0, 0,0, 0, 1, 2, 0, 0, 1),
-        new Result("Escape successfully. ", 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0.7),
+        new Result("Escape successfully. ", 0, 0, -10, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0.7),
 
         // wolf 2 3
         new Result("Fight result: ", 0, 0, 0, 0, 0, 0,0,0, 0, 1, 2, 0, 0, 1),
-        new Result("Escape successfully. ", 0, 0, 0, 0, 0, 0,0,0, 0, 0, 0, 0, 0, 0.7),
+        new Result("Escape successfully. ", 0, 0, -10, 0, 0, 0,0,0, 0, 0, 0, 0, 0, 0.7),
 
         // knignt 4 5
         new Result("Fight result: ", 0, 0, 0, 0, 0, 0,0,0, 0, 0, 0, 0, 0, 1),
-        new Result("Escape successfully. ", 0, 0, 0, 0, 0,0,0, 0, 0, 0, 0, 0, 0, 0.7),
+        new Result("Escape successfully. ", 0, 0, -10, 0, 0,0,0, 0, 0, 0, 0, 0, 0, 0.7),
 
         // appletree 6 7 8 9 10
         new Result("Get apple *1",0,0,0,0,0,0,0,0,0,0,1,0,0,0.8),
@@ -105,20 +105,20 @@ function EventTown(num) {
         new Result("The princess moved to a secret castle. If you have the ring, then go and find her.", 0,0,0,0,0,0,0,1,0,0,0,0,0,1),
         new Result("Get herb *1", 0,0,0,0,0,0,0,0,0,0,3,0,0,0.6),
         new Result("The villager doesn't give you anything.", 0,0,0,0,0,0,0,0,0,0,0,0,0,0.4),
-        new Result("You kill him, lose 10HP.", -10,0,0,0,0,0,0,0,0,0,0,0,0,1),
-        new Result("The princess seemed to be chasing the crown!",0,0,0,0,0,0,0,0,1,0,0,0,0,1),
+        new Result("You knock him down, lose 10HP.", -10,0,0,0,0,0,0,0,0,0,0,0,0,1),
+        new Result("I hear that the princess is preparing for a war against our country",0,0,0,0,0,0,0,0,1,0,0,0,0,1),
 
         // businessman 31 32 33 34
-        new Result("Lose money*50, get a new axe.", 0,0,0,0,0,0,-50,0,0,5,1,0,0,1),
-        new Result("Lose money*50, get a iron shield.",0,0,0,0,0,0,-50,0,0,9,1,0,0,1),
+        new Result("-60G, get a new axe.", 0,0,0,0,0,0,-60,0,0,5,1,0,0,1),
+        new Result("-60G, get a iron shield.",0,0,0,0,0,0,-60,0,0,9,1,0,0,1),
         new Result("You leave.",0,0,0,0,0,0,0,0,0,0,0,0,0,1),
-        new Result("error34",0,0,0,0,0,0,0,0,0,0,0,0,0,1),
+        new Result("Lose timber*2, get small healing potion*1.",0,0,0,0,0,0,0,0,0,15,1,4,2,1),
 
         // pass last knight 35
         new Result("The town guard thinks you are a hunter, let you in.",0,0,0,0,0,0,0,0,0,0,0,0,0,1),
 
         // escape fail 36
-        new Result("Fail to escape. ",0,0,0,0,0,0,0,0,0,0,0,0,0,0.3),
+        new Result("Fail to escape. ",0,0,-10,0,0,0,0,0,0,0,0,0,0,0.3),
 
         // beggar 37 38
         new Result("Thanks. I give you this mysterious key.",0,0,0,0,0,0,-50,0,0,12,1,0,0,1),
@@ -128,6 +128,7 @@ function EventTown(num) {
     AllResultTown[0].escape = false;
     AllResultTown[2].escape = false;
     AllResultTown[4].escape = false;
+    AllResultTown[22].escape = false;
     AllResultTown[36].escape = false;
 
 // 4 actions
@@ -174,25 +175,26 @@ function EventTown(num) {
 
         // villager1
         new Action("1. Talk to him.", [AllResultTown[26]]),
-        new Action("2. Kill him, or he will call the guards!", [AllResultTown[29]]),
+        new Action("2. Knock him down, or he may call the guards!", [AllResultTown[29]]),
         new Action("3. Beg for something.(60% succeed)",[AllResultTown[27], AllResultTown[28]]),
         new Action(),
 
         // villager2
         new Action("1. Talk to him.", [AllResultTown[30]]),
-        new Action("2. Kill him, or he will call the guards!", [AllResultTown[29]]),
+        new Action("2. Knock him down, or he may call the guards!", [AllResultTown[29]]),
         new Action("3. Beg for something.(60% succeed)",[AllResultTown[27], AllResultTown[28]]),
         new Action(),
 
 
         // businessman
-        new Action("1. 50 gold for an axe", [AllResultTown[31]]),
-        new Action("2. 50 gold for an iron shield", [AllResultTown[32]]),
-        new Action("3. leave",[AllResultTown[33]]),
-        new Action(),
+        new Action("1. 60 gold for an axe", [AllResultTown[31]]),
+        new Action("2. 60 gold for an iron shield", [AllResultTown[32]]),
+        new Action("3. 2*timber for 1*small healing potion.", [AllResultTown[34]]),
+        new Action("4. leave",[AllResultTown[33]]),
+        
 
         // beggar
-        new Action("1. Give him money", [AllResultTown[37]]),
+        new Action("1. Give him 50 Gold", [AllResultTown[37]]),
         new Action("2. Get away", [AllResultTown[38]]),
         new Action(),
         new Action()

@@ -64,15 +64,13 @@ GameOver.prototype.setId = function(Id){
 }
 GameOver.prototype.unloadScene = function () {
 
-    //暂时没有图片
-    // gEngine.Textures.unloadTexture(this.bgBackground);
     gEngine.Textures.unloadTexture(this.EndingTexture[this.id]);
-    //开始游戏
     gEngine.AudioClips.stopBackgroundAudio();
     gEngine.AudioClips.unloadAudio(this.BGM[this.id]);
     //save the endings
     var endings = gEngine.ResourceMap.retrieveAsset("endings");
     endings[this.id].flag = true;
+    console.log(endings);
     gEngine.ResourceMap.asyncLoadRequested("endings");
     gEngine.ResourceMap.asyncLoadCompleted("endings",endings);
     //back to menu

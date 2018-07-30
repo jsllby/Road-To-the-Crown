@@ -7,19 +7,19 @@
 
 var NameList = ["Apple","Meat","Fish","Herb","Timber","Axe","Spear","Sword","Shield1","Shield2","secretbag","cape","key","treasurechest","Letter","Potion","Mysterious potion","Letter","Ring","Bread","Antidote"];
 var InfoList = ["Apple:","Meat:","Fish:","Herb:","Timber:",
-                "Axe:","Spear:","Sword: ","Shield: ","Shield:",
+                "Axe:","Spear:","Sword: ","Wooden Shield: ","Iron Shield:",
                 "Secret bag: ","Cape: ","Key:",
-                "Treasure Chest: ", "Letter: ","Potion:","Mysterious potion:","Letter:","Ring:","Bread:","Antidote:"
+                "Treasure Chest: ", "Letter: ","Small healing potion:","Mysterious potion:","Letter:","Ring:","Bread:","Antidote:"
                 ];
-var InfoList_1 = ["Hunger+10","Hunger+20","Hunger+10","Health+10","strange timber",
-                "Attack+10","Attack+15","Attack+5","Defense+5","Defense+10",
+var InfoList_1 = ["Hunger+10","Hunger+20","Hunger+30","Health+10","strange timber",
+                "Attack+10","Attack+15","Attack+5","Defense+4","Defense+8",
                 "What's in it?","Disguise yourself","May open something?",
-                "It is locked", "It is empty","Health+10","What can it do?","Enter to check","Princess's ring","Hunger+5 Health+5",
+                "It is locked", "It is empty","Health+30","Use it on empty letter","Enter to check","Princess's ring","Hunger+30 Health+20",
                 "Help to detoxify"
                 ];               
-var HealthList = [0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,10,0,0,0,5,0];
+var HealthList = [0,0,0,10,0,0,0,0,0,0,0,0,0,0,0,30,0,0,0,30,0];
 var mHealthList = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var HungerList = [10,20,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0];
+var HungerList = [10,20,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0];
 var mHungerList = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 var PictureList = ["assets/item/0_apple.png",
     "assets/item/1_meat.png",
@@ -43,9 +43,9 @@ var PictureList = ["assets/item/0_apple.png",
     "assets/item/19_bread.png",
     "assets/item/20_potion3.png",
 ];
-var AtkList = [0,0,0,0,0,10,15,5,0,0,0,0,0,0,0,0,0,0,0,0,0];
-var DefList = [0,0,0,0,0,0,0,0,5,10,0,5,0,0,0,0,0,0,0,0,0];
-var TypeList = [0,0,0,0,1,2,2,2,3,3,1,3,1,1,1,0,1,4,1,0,1];  // 0: consume  1: cannot use   2: weapon  3:armor  4:可重复使用
+var AtkList = [0,0,0,0,0,13,20,6,0,0,0,0,0,0,0,0,0,0,0,0,0];
+var DefList = [0,0,0,0,0,0,0,0,4,8,0,0,0,0,0,0,0,0,0,0,0];
+var TypeList = [0,0,0,0,1,2,2,2,3,3,1,1,1,1,1,0,1,4,1,0,1];  // 0: consume  1: cannot use   2: weapon  3:armor  4:可重复使用
 
 function Item(id) {
     this.Id = id;
@@ -95,6 +95,6 @@ Item.prototype.Use = function(mygame){
     // update attribute renderable
     mygame.mHealth.setText("Health: "+ mygame.mHealthValue+"/"+ mygame.mHealthValueMax);
     mygame.mHunger.setText("Hunger: " + mygame.mHungerValue + "/"+ mygame.mHungerValueMax);
-    mygame.mAttack.setText("Attack: " + mygame.mAttackValue);
+    mygame.mAttack.setText("Attack:  " + mygame.mAttackValue);
     mygame.mDefense.setText("Defense: " + mygame.mDefenseValue);
 }

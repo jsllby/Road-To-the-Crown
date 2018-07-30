@@ -87,9 +87,13 @@ function MyTown() {
     this.bgAttribute = null;
     this.mHero = null;
     this.mHealth = null;
+    this.healthBar1 = null;
+    this.healthBar2 = null;
     this.mHealthValue = 100;
     this.mHealthValueMax = 100;
     this.mHunger = null;
+    this.hungerBar1 = null;
+    this.hungerBar2 = null;
     this.mHungerValue = 100;
     this.mHungerValueMax = 100;
     this.mAttack = null;
@@ -134,6 +138,9 @@ function MyTown() {
 
     this.hungerRate = 1;
     this.attack =false;
+
+    //cookie manager
+    this.cookiemanager = new cookieManager();
 }
 gEngine.Core.inheritPrototype(MyTown, Scene);
 
@@ -243,7 +250,8 @@ MyTown.prototype.unloadScene = function () {
 
 
     var nextscene = null;
-    if(this.ending>1){
+    console.log(this.ending);
+    if(this.ending<0){
         nextscene = new MyPalace(this.isPrincessLocation, this.isPrincessAmbition);
     }
     else{
@@ -327,8 +335,12 @@ MyTown.prototype.initialize = function () {
     
     this.mHealthValue = temp.mHealthValue;
     this.mHealthValueMax = temp.mHealthValueMax;
+    this.healthBar1 = temp.healthBar1;
+    this.healthBar2 = temp.healthBar2;
     this.mHungerValue = temp.mHungerValue;
     this.mHungerValueMax = temp.mHungerValueMax;
+    this.hungerBar1 = temp.hungerBar1;
+    this.hungerBar2 = temp.hungerBar2;
     this.mAttackValue = temp.mAttackValue;
     this.mDefenseValue = temp.mDefenseValue;
     this.mMoneyValue = temp.mMoneyValue;
@@ -429,12 +441,14 @@ MyTown.prototype.draw = function () {
         this.bgMsg.getXform().setPosition(1000,1000);
     }
 
-
-
     this.attributeCamera.setupViewProjection();
     this.bgAttribute.draw(this.attributeCamera);
     this.mHealth.draw(this.attributeCamera);
+    this.healthBar1.draw(this.attributeCamera);
+    this.healthBar2.draw(this.attributeCamera);
     this.mHunger.draw(this.attributeCamera);
+    this.hungerBar1.draw(this.attributeCamera);
+    this.hungerBar2.draw(this.attributeCamera);
     this.mAttack.draw(this.attributeCamera);
     this.mDefense.draw(this.attributeCamera);
     this.mMoneyTexture.draw(this.attributeCamera);
@@ -501,7 +515,6 @@ MyTown.prototype.update = function () {
                 this.mKnight.getXform().setPosition(x[0]+deltaX,x[1]);
             }
             else{
-                this.ending = 3;
                 this.EndGame();
             }
 
@@ -544,8 +557,6 @@ MyTown.prototype.update = function () {
 
             //this.mKnight.setTexture(this.kKnight);
         }
-
-
         else{
             this.isInAnimation=0;
             console.log(this.mEventSet[this.mEventIndex-1].action[0]);
@@ -634,22 +645,24 @@ MyTown.prototype.update = function () {
             this.hungerRate = 1;
         }          
         this.mHungerValue-=this.hungerRate;
+        if(this.mHungerValue>0&&this.mHealthValue<this.mHealthValueMax)
+            this.mHealthValue++;    
         if(this.mHungerValue<=0){
             //gEngine.GameLoop.stop();
             this.mHungerValue = 0;
             this.mHealthValue--;
         }
-        this.mHunger.setText("Hunger: " + this.mHungerValue + "/"+this.mHungerValueMax);
-        this.mHealth.setText("Health: " + this.mHealthValue + "/"+this.mHealthValueMax);
     }
     if(this.mHealthValue<=0&&this.ending<0){
         this.ending = 1;
-        // if(this.mBag.GetItemIdx(0)==-1)  this.ending = 0;
+        //save cookie
+        this.cookiemanager.setCookie("Ending1","true");
+
         this.EndGame();
     }
 
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Z)){
-        this.ending = 4;
+        //this.ending = 4;
         this.isPrincessAmbition = true;
         this.isPrincessLocation = true;
         this.EndGame();
@@ -660,15 +673,25 @@ MyTown.prototype.update = function () {
         var nextscene = new MyTown();
         gEngine.Core.startScene(nextscene);
     }
-    this.mMoneyTexture.setText("Money: " + this.mMoneyValue);
+    
+    // update attribute renderable
+    this.mHunger.setText("Hunger: " + this.mHungerValue + "/"+this.mHungerValueMax);
+    this.mHealth.setText("Health: " + this.mHealthValue + "/"+this.mHealthValueMax);
+    this.mAttack.setText("Attack:  " + this.mAttackValue);
+    this.mDefense.setText("Defense: " + this.mDefenseValue);
+    this.mMoneyTexture.setText("Money:   " + this.mMoneyValue+"  G");
 
+    var rate = this.mHungerValue/this.mHungerValueMax;
+    this.hungerBar2.getXform().setPosition(8+rate*42,140);
+    this.hungerBar2.getXform().setSize(84*rate, 8);
+    rate = this.mHealthValue/this.mHealthValueMax;
+    this.healthBar2.getXform().setPosition(8+rate*42,163);
+    this.healthBar2.getXform().setSize(84*rate, 8);
 };
 
 //遇到事件后弹窗消息，只能按空格继续
 MyTown.prototype.EndGame = function(){
-    if(this.ending==-1){
-        this.ending = 1;
-    }
+
     gEngine.ResourceMap.asyncLoadRequested("status");   
     gEngine.ResourceMap.asyncLoadCompleted("status",this);
     gEngine.GameLoop.stop();
@@ -698,23 +721,33 @@ MyTown.prototype.SendMessage = function(line1, line2, line3, line4,line5, line6)
 
     this.mMes1.setText(line11);
     this.mMes1.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]+70-150);
-    if(typeof(line2)!="undefined")
-        this.mMes2.setText(line2);
+
+    //line2
+    if(typeof(line2)!="undefined")  this.mMes2.setText(line2);
+    else this.mMes2.setText("");
     this.mMes2.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]+35-150);
-    if(typeof(line3)!="undefined")
-        this.mMes3.setText(line3);
+
+    //line3
+    if(typeof(line3)!="undefined") this.mMes3.setText(line3);
+    else this.mMes3.setText("");
     this.mMes3.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-0-150);
-    if(typeof(line4) != "undefined")
-        this.mMes4.setText(line4);
+
+    //line4
+    if(typeof(line4) != "undefined") this.mMes4.setText(line4);
+    else this.mMes4.setText("");
     this.mMes4.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-35-150);
-    if(typeof(line5) != "undefined")
-        this.mMes5.setText(line5);
+
+    //line5
+    if(typeof(line5) != "undefined") this.mMes5.setText(line5);
+    else this.mMes5.setText("");
     this.mMes5.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-70-150);
-    if(typeof(line6) != "undefined")
-        this.mMes6.setText(line6);
+
+    //line6
+    if(typeof(line6) != "undefined") this.mMes6.setText(line6);
+    else this.mMes6.setText("");
     this.mMes6.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-105-150);
 
-    console.log("what now?"+this.hasChose);
+    // console.log("what now?"+this.hasChose);
     this.isMesOn=true;
 }
 

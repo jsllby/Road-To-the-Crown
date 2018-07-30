@@ -41,7 +41,15 @@ Result.prototype.apply = function(mygame, enemy){
         console.log(this.msg);
         return this.msg;
     }
-    if(mygame.mBag.GetItemNum(this.dropItemId)>-1 && mygame.mBag.GetItemNum(this.dropItemId)<this.dropItemNum){
+    if(mygame.mHungerValue + this.Hunger <0){
+        this.msg = "Not enough hunger. ";
+        console.log(this.msg);
+        if(enemy)
+            return this.msg + "Fail to escape. " +enemy.fight(mygame);
+        else
+            return this.msg;
+    }
+    if(mygame.mBag.GetItemNum(this.dropItemId)<this.dropItemNum){
         this.msg = "not enough "+ NameList[this.dropItemId];
         console.log(this.msg);
         return this.msg;
@@ -85,20 +93,15 @@ Result.prototype.apply = function(mygame, enemy){
         mygame.mBag.AddItem(this.getItemId, this.getItemNum);
     }
     if(this.dropItemNum>0){
-        console.log("drop "+this.getItemId);
-        mygame.mBag.AddItem(this.getItemId, this.getItemNum);
+        console.log("drop "+this.dropItemId);
+        mygame.mBag.RemoveItemById(this.dropItemId, this.dropItemNum);
     }
     
     //fight
     if(!this.escape){
         return this.msg + enemy.fight(mygame);
     }
-    // update attribute renderable
-    mygame.mHealth.setText("Health: "+ mygame.mHealthValue+"/"+ mygame.mHealthValueMax);
-    mygame.mHunger.setText("Hunger: " + mygame.mHungerValue + "/"+ mygame.mHungerValueMax);
-    mygame.mAttack.setText("Attack: " + mygame.mAttackValue);
-    mygame.mDefense.setText("Defense: " + mygame.mDefenseValue);
-    mygame.mMoneyTexture.setText("Money: " + mygame.mMoneyValue);
+   
     //console.log(this.flag);
     
     return this.msg;

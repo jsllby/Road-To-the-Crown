@@ -83,9 +83,13 @@ function MyGame() {
     this.bgAttribute = null;
     this.mHero = null;
     this.mHealth = null;
-    this.mHealthValue = 100;
-    this.mHealthValueMax = 100;
+    this.healthBar1 = null;
+    this.healthBar2 = null;
+    this.mHealthValue = 1100;
+    this.mHealthValueMax = 1100;
     this.mHunger = null;
+    this.hungerBar1 = null;
+    this.hungerBar2 = null;
     this.mHungerValue = 100;
     this.mHungerValueMax = 100;
     this.mAttack = null;
@@ -93,7 +97,7 @@ function MyGame() {
     this.mDefense = null;
     this.mDefenseValue = 10;
     this.mMoneyTexture = null;
-    this.mMoneyValue = 0;
+    this.mMoneyValue = 110;
     this.mMes1 = null;
     this.mMes2 = null;
     this.mMes3 = null;
@@ -101,7 +105,6 @@ function MyGame() {
     this.mMes5 = null;
     this.mMes6 = null;
     this.Intro = null;
-    
 
     // cameras
     this.mCamera = null;
@@ -129,9 +132,11 @@ function MyGame() {
     this.hungerRate = 20;
     
     this.princess = null;
+
+    // cookie manager
+    this.cookiemanager = new cookieManager();
 }
 gEngine.Core.inheritPrototype(MyGame, Scene);
-
 
 MyGame.prototype.loadScene = function () {
     
@@ -184,13 +189,7 @@ MyGame.prototype.loadScene = function () {
 };
 
 MyGame.prototype.unloadScene = function () {
-    /*
-    gEngine.Textures.unloadTexture(this.kMinionSprite);
-    gEngine.Textures.unloadTexture(this.kPlatformTexture);
-    gEngine.Textures.unloadTexture(this.kWallTexture);
-    gEngine.Textures.unloadTexture(this.kTargetTexture);
-    gEngine.Textures.unloadTexture(this.kParticleTexture);
-    */
+
     gEngine.Textures.unloadTexture(this.bgForestTexture1);
     gEngine.Textures.unloadTexture(this.bgForestTexture2);
     gEngine.Textures.unloadTexture(this.kKnight);
@@ -234,7 +233,7 @@ MyGame.prototype.unloadScene = function () {
     gEngine.AudioClips.unloadAudio(this.attack_audio);
 
     var nextscene = null;
-    if(this.ending>1){
+    if(this.ending<0){
         nextscene = new MyTown();
     }
     else{
@@ -260,7 +259,7 @@ MyGame.prototype.initialize = function () {
     this.attributeCamera = new Camera(
         vec2.fromValues(50,135),
         100,
-        [50,430,160,150],
+        [50,330,240,250],
         1
     );
     this.attributeCamera.setBackgroundColor([0.9,0.9,0.9,1]);
@@ -279,7 +278,7 @@ MyGame.prototype.initialize = function () {
     this.Intro.setColor([1,0,0,0]);
     this.Intro.getXform().setPosition(650,300);
 
-            // sets the background to gray
+    // sets the background to gray
     gEngine.DefaultResources.setGlobalAmbientIntensity(3);
 
     gEngine.AudioClips.playBackgroundAudio(this.BGM);
@@ -320,46 +319,59 @@ MyGame.prototype.initialize = function () {
     this.bgForest9.setColor([0, 0, 0, 0]);
     this.bgForest9.getXform().setSize(2000,600);
     this.bgForest9.getXform().setPosition(17000,300);
-  /*  this.bgBag = new TextureRenderable(this.bgBagTexture);
-    this.bgBag.setColor([0,0,0,0]);
-    this.bgBag.getXform().setSize(100,100);
-    this.bgBag.getXform().setPosition(50,240);*/
+
     this.mBag = new Bag(this.BagTexture,this.CursorTexture,this);
 
     // attribute background
     this.bgAttribute = new TextureRenderable(this.bgAttributeTexture);
     this.bgAttribute.setColor([0,0,0,0]);
-    this.bgAttribute.getXform().setSize(120,102);
+    this.bgAttribute.getXform().setSize(120,115);
     this.bgAttribute.getXform().setPosition(50,135);
 
     // health
     this.mHealth = new FontRenderable("Health: "+this.mHealthValue+"/"+this.mHealthValueMax);
     this.mHealth.setColor([0,0,0,1]);
-    this.mHealth.getXform().setPosition(10,163.5);
+    this.mHealth.getXform().setPosition(10,175);
     this.mHealth.setTextHeight(9);
+    this.healthBar1 = new Renderable();
+    this.healthBar1.setColor([0,0,0,1]);
+    this.healthBar1.getXform().setPosition(50,163);
+    this.healthBar1.getXform().setSize(86, 10);
+    this.healthBar2 = new Renderable();
+    this.healthBar2.setColor([1,0,0,1]);
+    this.healthBar2.getXform().setPosition(50,163);
+    this.healthBar2.getXform().setSize(84, 8);
 
     // hunger
     this.mHunger = new FontRenderable("Hunger: " + this.mHungerValue + "/"+this.mHungerValueMax);
     this.mHunger.setColor([0, 0, 0, 1]);
-    this.mHunger.getXform().setPosition(10, 150.5);
+    this.mHunger.getXform().setPosition(10, 152);
     this.mHunger.setTextHeight(9);
+    this.hungerBar1 = new Renderable();
+    this.hungerBar1.setColor([0,0,0,1]);
+    this.hungerBar1.getXform().setPosition(50,140);
+    this.hungerBar1.getXform().setSize(86, 10);
+    this.hungerBar2 = new Renderable();
+    this.hungerBar2.setColor([0,1,1,1]);
+    this.hungerBar2.getXform().setPosition(50,140);
+    this.hungerBar2.getXform().setSize(84, 8);
 
     // attack
-    this.mAttack = new FontRenderable("Attack: " + this.mAttackValue);
+    this.mAttack = new FontRenderable("Attack:  " + this.mAttackValue);
     this.mAttack.setColor([0, 0, 0, 1]);
-    this.mAttack.getXform().setPosition(10, 136.5);
+    this.mAttack.getXform().setPosition(10, 128);
     this.mAttack.setTextHeight(9);
 
     // defense
     this.mDefense = new FontRenderable("Defense: " + this.mDefenseValue);
     this.mDefense.setColor([0, 0, 0, 1]);
-    this.mDefense.getXform().setPosition(10, 123.5);
+    this.mDefense.getXform().setPosition(10, 115);
     this.mDefense.setTextHeight(9);
     
     // money
-    this.mMoneyTexture = new FontRenderable("Money: " + this.mMoneyValue);
+    this.mMoneyTexture = new FontRenderable("Money:   " + this.mMoneyValue + "  G");
     this.mMoneyTexture.setColor([0, 0, 0, 1]);
-    this.mMoneyTexture.getXform().setPosition(10, 110.5);
+    this.mMoneyTexture.getXform().setPosition(10, 102);
     this.mMoneyTexture.setTextHeight(9);
 
     // message
@@ -414,6 +426,10 @@ MyGame.prototype.initialize = function () {
     //event, action and result
     this.mEventSet = new EventSet(this.mEventNum);
     console.log(this.mEventSet);
+
+    //cookie manager test
+    //this.cookiemanager.setCookie("Ending1",true);
+
 };
 
 // This is the draw function, make sure to setup proper drawing environment, and more
@@ -456,13 +472,15 @@ MyGame.prototype.draw = function () {
     else{
         this.bgMsg.getXform().setPosition(1000,1000);
     }
-    
-    
 
     this.attributeCamera.setupViewProjection();
     this.bgAttribute.draw(this.attributeCamera);
     this.mHealth.draw(this.attributeCamera);
+    this.healthBar1.draw(this.attributeCamera);
+    this.healthBar2.draw(this.attributeCamera);
     this.mHunger.draw(this.attributeCamera);
+    this.hungerBar1.draw(this.attributeCamera);
+    this.hungerBar2.draw(this.attributeCamera);
     this.mAttack.draw(this.attributeCamera);
     this.mDefense.draw(this.attributeCamera);
     this.mMoneyTexture.draw(this.attributeCamera);
@@ -472,7 +490,6 @@ MyGame.prototype.draw = function () {
         this.mBag.Draw(this.bagCamera);
     }
 };
-
 
 // The Update function, updates the application state. Make sure to _NOT_ draw
 // anything from this function!
@@ -489,7 +506,7 @@ MyGame.prototype.update = function () {
         if(this.animationCounter%25==0){
             gEngine.AudioClips.playACue(this.attack_audio);
         }
-        console.log(this.animationCounter);
+        //console.log(this.animationCounter);
     }
 
     if(this.animationCounter==100){
@@ -506,13 +523,11 @@ MyGame.prototype.update = function () {
         console.log(res);
         var msg = res.apply(this, this.mEventSet[this.mEventIndex-1].enemy);
 
-
         var enemy = this.mEventSet[this.mEventIndex-1].icon;
         enemy.getXform().setPosition(2000,2000);
 
         this.SendMessage(msg,"","","","","");
     }
-
 
     if(this.isIntroOpen==true){
         if (gEngine.Input.isKeyClicked(gEngine.Input.keys.Space)){
@@ -542,7 +557,6 @@ MyGame.prototype.update = function () {
                 this.mKnight.getXform().setPosition(x[0]+deltaX,x[1]);
             }
             else{
-                this.ending = 3;
                 this.EndGame();
             }
             
@@ -582,11 +596,8 @@ MyGame.prototype.update = function () {
             this.isInAnimation = 1;
             this.flag=1;
             //this.animationCounter++;
-
             //this.mKnight.setTexture(this.kKnight);
         }
-
-
         else{
             this.isInAnimation=0;
             console.log(this.mEventSet[this.mEventIndex-1].action[0]);
@@ -659,7 +670,7 @@ MyGame.prototype.update = function () {
         if(this.mBag.GetItemIdx(11)!=-1){
             if(this.mEventIndex==15){
                 var action = this.mEventSet[this.mEventIndex].action[1];
-                action.setContent("2. I am a hunter, I have this cape!");
+                action.setContent("2. Mingle in the crowd by the cape");
                 action.setResult([AllResult[37]]);
             }
         }
@@ -691,22 +702,27 @@ MyGame.prototype.update = function () {
         else
             this.hungerRate = 1;
         this.mHungerValue-=this.hungerRate;
+        if(this.mHungerValue>0&&this.mHealthValue<this.mHealthValueMax)
+        {
+//            console.log(this.mHealthValue);
+//            console.log(this.mHealthValueMax);
+            this.mHealthValue++;
+        }
         if(this.mHungerValue<=0){
             //gEngine.GameLoop.stop();
             this.mHungerValue = 0;
             this.mHealthValue--;
         }
-        this.mHunger.setText("Hunger: " + this.mHungerValue + "/"+this.mHungerValueMax);
-        this.mHealth.setText("Health: " + this.mHealthValue + "/"+this.mHealthValueMax);
     }
-    if(this.mHealthValue<=0){
-        
-       // if(this.mBag.GetItemIdx(0)==-1)  this.ending = 0;
+    if(this.mHealthValue<=0&&this.ending<0){
+        this.ending = 1;
+        //save cookie
+        this.cookiemanager.setCookie("Ending1","true");
         this.EndGame();
     }
     
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Z)){
-        this.ending = 4;
+        //this.ending = 4;
         this.EndGame();
     }
     
@@ -715,16 +731,26 @@ MyGame.prototype.update = function () {
         var nextscene = new MyGame();
         gEngine.Core.startScene(nextscene);
     }
-    this.mMoneyTexture.setText("Money: " + this.mMoneyValue);
     
+    // update attribute renderable
+    this.mHunger.setText("Hunger: " + this.mHungerValue + "/"+this.mHungerValueMax);
+    this.mHealth.setText("Health: " + this.mHealthValue + "/"+this.mHealthValueMax);
+    this.mAttack.setText("Attack:  " + this.mAttackValue);
+    this.mDefense.setText("Defense: " + this.mDefenseValue);
+    this.mMoneyTexture.setText("Money:   " + this.mMoneyValue+"  G");
+    
+    var rate = this.mHungerValue/this.mHungerValueMax;
+    this.hungerBar2.getXform().setPosition(8+rate*42,140);
+    this.hungerBar2.getXform().setSize(84*rate, 8);
+    rate = this.mHealthValue/this.mHealthValueMax;
+    this.healthBar2.getXform().setPosition(8+rate*42,163);
+    this.healthBar2.getXform().setSize(84*rate, 8);
 };
 
 //遇到事件后弹窗消息，只能按空格继续
 MyGame.prototype.EndGame = function(){
-    if(this.ending==-1){
-        this.ending = 1;
-    }
-   
+    console.log("end: "+this.ending);
+
     gEngine.ResourceMap.asyncLoadRequested("status");
     
     gEngine.ResourceMap.asyncLoadCompleted("status",this);
@@ -755,21 +781,30 @@ MyGame.prototype.SendMessage = function(line1, line2, line3, line4,line5, line6)
 
     this.mMes1.setText(line11);
     this.mMes1.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]+70-150);
-    this.mMes2.setText(line2);
+    //line2
+    if(typeof(line2)!="undefined")  this.mMes2.setText(line2);
+    else this.mMes2.setText("");
     this.mMes2.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]+35-150);
-    if(typeof (line3)!= "undefined")
-        this.mMes3.setText(line3);
-    this.mMes3.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-0-150);
-    if(typeof(line4) != "undefined")
-        this.mMes4.setText(line4);
-    this.mMes4.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-35-150);
-    if(typeof(line5) != "undefined")
-        this.mMes5.setText(line5);
-    this.mMes5.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-70-150);
-    if(typeof(line6) != "undefined")
-        this.mMes6.setText(line6);
-    this.mMes6.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-105-150);
 
+    //line3
+    if(typeof(line3)!="undefined") this.mMes3.setText(line3);
+    else this.mMes3.setText("");
+    this.mMes3.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-0-150);
+
+    //line4
+    if(typeof(line4) != "undefined") this.mMes4.setText(line4);
+    else this.mMes4.setText("");
+    this.mMes4.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-35-150);
+
+    //line5
+    if(typeof(line5) != "undefined") this.mMes5.setText(line5);
+    else this.mMes5.setText("");
+    this.mMes5.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-70-150);
+
+    //line6
+    if(typeof(line6) != "undefined") this.mMes6.setText(line6);
+    else this.mMes6.setText("");
+    this.mMes6.getXform().setPosition(cameraCenter[0]-450,cameraCenter[1]-105-150);
 
     this.isMesOn=true;
 }

@@ -58,8 +58,8 @@ function Bag(myTexture,cursorTexture,myGame){
     */
     this.AddItem(0,2);
     this.AddItem(3,2);
-    //this.AddItem(19,1);
-    //this.AddItem(20,1);
+    this.AddItem(17,1);
+    //this.AddItem(11,1);
    // this.AddItem(17,1);
     
     this.attackChange=0;
@@ -84,7 +84,7 @@ Bag.prototype.GetItemNum = function(id){
         if(id == this.itemSet[i].Id)
             return this.itemNum[i];
     }
-    return -1;
+    return 0;
 }
 
 Bag.prototype.AddItem = function(id, num){
@@ -233,8 +233,8 @@ Bag.prototype.update = function(){
     }  
     
     if(gEngine.Input.isKeyClicked(gEngine.Input.keys.Enter)){
-        console.log("type");
-        console.log(this.itemSet[this.current].type);
+        //console.log("type");
+        //console.log(this.itemSet[this.current].type);
         if(this.itemSet[this.current].type==0){
             this.itemSet[this.current].Use(this.myGame);
             this.RemoveItem();

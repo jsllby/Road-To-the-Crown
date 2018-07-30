@@ -37,7 +37,7 @@ function EventPalace(num, isPrincessLocation, isPrincessAmbition, isMeetPrincess
         "This is a soldier",
         "This is a captain",
         "Merchant: Would you like to buy something",
-        "Maid: I ...",
+        "Maid: I have made some good bread. Would you like to taste some?",
         "You meet the duke, he wants to kill you and the king",
         "You decide to catch the princess to stop the war",
         "I have some potions that may be useful to your fight "
@@ -51,13 +51,13 @@ function EventPalace(num, isPrincessLocation, isPrincessAmbition, isMeetPrincess
     var AllResultPalace=[
         // common
         new Result("Fight result: ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1),
-        new Result("Escape successfully. ", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.7),
-        new Result("Fail to escape. ",0,0,0,0,0,0,0,0, 0, 0,0,0,0,0.3),
+        new Result("Escape successfully. ", 0, 0, -10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.7),
+        new Result("Fail to escape. ",0,0,-10,0,0,0,0,0, 0, 0,0,0,0,0.3),
         new Result("Get nothing", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1),
         new Result("ok", 0, 0, 0, 0, 0, 0, 0,0, 0,  0, 0, 0, 0, 1),
 
         // businessman 567
-        new Result("Lose money*120, get a new spear.", 0,0,0,0,0,0,-120,0,0,6,1,0,0,1),
+        new Result("-120G, get a new spear.", 0,0,0,0,0,0,-120,0,0,6,1,0,0,1),
         new Result("Lose timber*2, get a small healing potion.",0,0,0,0,0,0,0,0,0,15,1,4,2,1),
         new Result("You leave.",0,0,0,0,0,0,0,0,0,0,0,0,0,1),
         
@@ -71,11 +71,11 @@ function EventPalace(num, isPrincessLocation, isPrincessAmbition, isMeetPrincess
         new Result("ok", 0, 0, 0, 0, 0, 0, 0,0, 0,  0, 0, 0, 0, 1),
         
         //15-17
-        new Result("Lose 50 Gold, get a small healing potion.", 0,0,0,0,0,0,-50,0,0,15,1,0,0,1),
-        new Result("Lose 100 Gold, get an antidote potion.",0,0,0,0,0,0,-100,0,0,20,1,0,0,1),
+        new Result("-50G, get a small healing potion.", 0,0,0,0,0,0,-50,0,0,15,1,0,0,1),
+        new Result("-100G, get an antidote potion.",0,0,0,0,0,0,-100,0,0,20,1,0,0,1),
         new Result("You leave.",0,0,0,0,0,0,0,0,0,0,0,0,0,1),
         //18
-        new Result("Lose 50 Gold, hunger+30, health+30.", 30,0,30,0,0,0,-50,0,0,0,0,0,0,1),
+        new Result("-50G, Get bread*1.", 0,0,0,0,0,0,-50,0,0,19,1,0,0,1),
     ];
     AllResultPalace[0].escape = false;
     AllResultPalace[2].escape = false;
@@ -101,13 +101,13 @@ function EventPalace(num, isPrincessLocation, isPrincessAmbition, isMeetPrincess
         new Action(),
         // soldier
         new Action("1. Fight",[AllResultPalace[0]]),
-        new Action("2. Escape", [AllResultPalace[1], AllResultPalace[2]]),
+        new Action("2. Escape (-10 Hunger, 70% succeed)", [AllResultPalace[1], AllResultPalace[2]]),
         new Action(),
         new Action(),
 
         // captain
         new Action("1. Fight",[AllResultPalace[0]]),
-        new Action("2. Escape", [AllResultPalace[1], AllResultPalace[2]]),
+        new Action("2. Escape (-10 Hunger, 70% succeed)", [AllResultPalace[1], AllResultPalace[2]]),
         new Action(),
         new Action(),
 
@@ -118,7 +118,7 @@ function EventPalace(num, isPrincessLocation, isPrincessAmbition, isMeetPrincess
         new Action(),
 
         // servant
-        new Action("1. Yes (50G for 30 hunger and 30 health)", [AllResultPalace[18]]),
+        new Action("1. Yes (-50G)", [AllResultPalace[18]]),
         new Action("2. No, thanks", [AllResultPalace[7]]),
         new Action(),
         new Action(),
@@ -158,9 +158,9 @@ function EventPalace(num, isPrincessLocation, isPrincessAmbition, isMeetPrincess
     var t = Math.floor(Math.random()*2)+3;
     if(num==1&&isPrincessLocation)
         t=0;
-    if(num==7)
+    if(num==4)
         t=6;
-    if(num==8)
+    if(num==6)
         t=5;
     if(num==9&&isMeetPrincess)
         t=1;
